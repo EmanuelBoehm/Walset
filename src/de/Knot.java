@@ -7,10 +7,7 @@ public class Knot{
     public final int ID;
     public Color knot;
     public int power = 1;
-    public Knot(int id, Color col){
-        this.knot = col;
-        ID = id;
-    }
+
     public Knot(int id, int rgb){
         ID = id;
         this.knot = new Color(rgb);
