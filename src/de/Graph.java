@@ -4,7 +4,8 @@ import java.awt.*;
 import java.util.*;
 
 public class Graph {
-    private HashMap<ArrayList<Integer>, Double> distanceGraph;
+    //with syntax <Knot1.ID, Knot2.ID>, distance of Knot1 and Knot2
+    private LinkedList<Edge> distanceGraph;
     private ArrayList<Knot> l;
     private NormInter dis;
     public ArrayList<Color> maxCol;
@@ -20,23 +21,26 @@ public class Graph {
     }
 
     public boolean disgraph(NormInter d) {
-        distanceGraph = new HashMap<>();
+
+        distanceGraph = new LinkedList<>();
         for (int n = 0; n < l.size() - 1; n++) {
             for (int i = n + 1; i < l.size(); i++) {
                 Knot nn = l.get(n);
                 Knot ii = l.get(i);
                 if (d.dist(ii, nn) < 500) {
-                    ArrayList<Integer> al = new ArrayList<>();
-                    al.add(nn.ID);
-                    al.add(ii.ID);
-                    distanceGraph.put(al, d.dist(ii, nn));
+                    distanceGraph.add(new Edge(nn, ii, d.dist(ii, nn)));
                 }
             }
         }
+        distanceGraph.sort((edge, t1) -> {
+            if(edge.weight.equals(t1.weight)) return 0;
+            if(edge.weight > t1.weight) return 1;
+            else return -1;
+        });
         return true;
     }
 
-    public double maxDis() {
+    /*public double maxDis() {
         double max = 9;
         Iterator<Double> it = distanceGraph.values().iterator();
 
@@ -48,26 +52,21 @@ public class Graph {
             }
         }
         return max;
-    }
+    }*/
 
-    public boolean merge() {
-        ArrayList<Knot> toDelList = new ArrayList<>();
-        for (Map.Entry<ArrayList<Integer>, Double> entry : distanceGraph.entrySet()) {
-
-            if (entry.getValue() < 1){
-                Knot kn = searchKnot(entry.getKey().get(0));
-                Knot toDel = searchKnot(entry.getKey().get(1));
-                if (kn != null && toDel != null) {
-                    kn.power += toDel.power;
-                    toDelList.add(toDel);
-                }
-            }
+    public boolean merge(double mergeDistance) {
+        Iterator<Edge> it = distanceGraph.iterator();
+        Edge e;
+        ArrayList <Edge> delList = new ArrayList<>();
+        while (it.hasNext()){
+            e = it.next();
+            if(e.weight > mergeDistance) break;
+            delList.add(e);
         }
-        System.out.println("deleting " + toDelList.size() + " knots");
-        for(int i = 0; i < toDelList.size(); i++){
-            deleteKnot(toDelList.get(i));
+        System.out.println("deleting " + delList.size() + " knots");
+        for (Edge edge : delList) {
+            deleteKnot(edge.source);
         }
-
         return true;
     }
 
@@ -82,31 +81,28 @@ public class Graph {
 
     private boolean deleteKnot(Knot toDel) {
         //System.out.println("counter del; " + counter++);
-        ArrayList<ArrayList<Integer>> al = new ArrayList<>();
-        distanceGraph.keySet().forEach(x -> {
-            if(x.contains(toDel.ID)){
-                al.add(x);
+        Iterator <Edge> it = distanceGraph.iterator();
+        Edge e;
+        while(it.hasNext()){
+            e = it.next();
+            if(e.source == toDel || e.destination == toDel){
+                it.remove();
             }
-        });
-        for (ArrayList<Integer> key: al){
-            distanceGraph.remove(key);
         }
-            return true;
+        return true;
     }
     public ArrayList<String> getMax(int k){
         ArrayList<String> res = new ArrayList<>();
         ArrayList<Knot> maxL = new ArrayList<>();
         ArrayList<Color> maxCol = new ArrayList<>();
-        Iterator<Knot> it = l.iterator();
-        while(it.hasNext()){
-            Knot kn = it.next();
-            if(maxL.size() < k) {
+        for (Knot kn : l) {
+            if (maxL.size() < k) {
                 maxL.add(kn);
-            }else {
+            } else {
                 weight(kn, maxL);
                 if (maxL.get(0).power < kn.power) {
                     maxL.set(0, kn);
-                    maxL.sort((knot, t1) -> knot.power > t1.power ? 1 : -1);
+                    maxL.sort(Comparator.comparingInt(knot -> knot.power));
                 }
             }
         }
@@ -120,8 +116,19 @@ public class Graph {
     private void weight(Knot kn, ArrayList<Knot> currMaxList){
         double a = 1.0;
         for(Knot l: currMaxList){
-            a *= dis.dist(l,kn)/(dis.dist(l,currMaxList.get(0))+.4);
+            a *= dis.dist(l,kn)/(dis.dist(l,currMaxList.get(0))+.5);
         }
         kn.power *= a;
+    }
+    static class Edge{
+        Knot source;
+        Knot destination;
+        Double weight;
+
+        public Edge(Knot source, Knot destination, Double weight){
+            this.destination = destination;
+            this.source = source;
+            this.weight = weight;
+        }
     }
 }

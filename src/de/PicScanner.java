@@ -17,7 +17,7 @@ public class PicScanner {
 
     public PicScanner(String path){
         try {
-            this.graph = new Graph(new Norm2());
+            this.graph = new Graph(new Norm1());
             this.img = ImageIO.read(new File(path));
             setValues();
         } catch (IOException e) {
@@ -34,8 +34,8 @@ public class PicScanner {
             }
         }
         graph.add(knotList);
-        graph.disgraph(new Norm1());
-        graph.merge();
+        graph.disgraph(new Norm2());
+        graph.merge(1);
         System.out.println("best colors: " + graph.getMax(10));
         drawToScreen(graph.maxCol);
     }
