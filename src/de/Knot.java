@@ -26,8 +26,7 @@ public class Knot{
         return knot.getBlue();
     }
     public String getRGB(){
-        StringBuilder str = new StringBuilder();
-        return str.append(knot.getRed()).append(" ").append(knot.getGreen()).append(" ").append(knot.getBlue()).toString();
+        return knot.getRed() + " " + knot.getGreen() + " " + knot.getBlue();
 
     }
 }

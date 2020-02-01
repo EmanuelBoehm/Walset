@@ -46,13 +46,14 @@ public class Graph {
             if(e.weight > mergeDistance) break;
             delList.add(e);
         }
+        /*
         System.out.println("existing knots " + l.size());
         System.out.println("existing edges " + distanceGraph.size());
-        System.out.println("deleting " + delList.size() + " edges");
+        System.out.println("deleting " + delList.size() + " edges");*/
         int count = 0;
         for (Edge edge : delList) {
             deleteKnot(edge.source);
-            if(count++%1000 == 0) System.out.println("deleted " + count + " knots");
+            //if(count++%1000 == 0) System.out.println("deleted " + count + " knots");
         }
         return true;
     }
