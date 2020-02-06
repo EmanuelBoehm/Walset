@@ -35,6 +35,7 @@ public class Graph {
             if(edge.weight > t1.weight) return 1;
             else return -1;
         });
+
     }
 
     public boolean merge(double mergeDistance) {
@@ -46,13 +47,13 @@ public class Graph {
             if(e.weight > mergeDistance) break;
             delList.add(e);
         }
-        /*
-        System.out.println("existing knots " + l.size());
+
+        /*System.out.println("existing knots " + l.size());
         System.out.println("existing edges " + distanceGraph.size());
         System.out.println("deleting " + delList.size() + " edges");*/
         int count = 0;
         for (Edge edge : delList) {
-            deleteKnot(edge.source);
+            deleteKnot(edge.destination);
             //if(count++%1000 == 0) System.out.println("deleted " + count + " knots");
         }
         return true;
@@ -75,6 +76,7 @@ public class Graph {
             }
         }
     }
+
     public ArrayList<String> getMax(int k){
         ArrayList<String> res = new ArrayList<>();
         ArrayList<Knot> maxL = new ArrayList<>();
@@ -100,9 +102,11 @@ public class Graph {
     private void weight(Knot kn, ArrayList<Knot> currMaxList){
         double a = 1.0;
         for(Knot l: currMaxList){
-            a *= dis.dist(l,kn)/(dis.dist(l,currMaxList.get(0))+.5);
+            double strength = 0.1;
+            a *= dis.dist(l,kn);
+
         }
-        kn.power *= a;
+        kn.power += 2*a;
     }
     static class Edge{
         Knot source;

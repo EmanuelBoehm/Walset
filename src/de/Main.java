@@ -12,13 +12,17 @@ import java.util.StringTokenizer;
 
 public class Main {
     public static void main(String[] args) {
-
-        String path = "/home/emi/pic/wallpaper/";
-        PicScanner scn = new PicScanner(path + setup().get(1), 80);
+        String path;
+        try{
+            path = args[0];
+        }catch (NullPointerException e){
+            path = "/home/emi/pic/walpic2.jpg";
+        }
+        PicScanner scn = new PicScanner(path, 120);
         Graph graph = new Graph(new Norm2());
         graph.add(scn.getKnotList());
         graph.disgraph(new Norm2());
-        graph.merge(1);
+        graph.merge(.1);
         //System.out.println("best colors: " + graph.getMax(10));
         //drawToScreen(graph.maxCol, scn.getImg());
         print(graph.getMax(18));
@@ -28,29 +32,23 @@ public class Main {
     private static String decToHexa(int n) {
         // char array to store hexadecimal number
         char[] hexaDeciNum = new char[100];
-
         // counter for hexadecimal number array
         int i = 0;
-        while(n!=0)
-        {
+        while(n!=0) {
             // temporary variable to store remainder
             int temp  = 0;
-
             // storing remainder in temp variable.
             temp = n % 16;
 
             // check if temp < 10
-            if(temp < 10)
-            {
+            if(temp < 10) {
                 hexaDeciNum[i] = (char)(temp + 48);
                 i++;
             }
-            else
-            {
+            else {
                 hexaDeciNum[i] = (char)(temp + 55);
                 i++;
             }
-
             n = n/16;
         }
 
